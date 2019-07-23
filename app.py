@@ -1,17 +1,12 @@
 from flask import Flask , request , jsonify
 from flask_restful import Resource , Api
+import json
+import pandas as pd
 
 app = Flask(__name__)
 api = Api(app)
 
-dataframe_map = {
-  'monday' : monday_df,
-  'tuesday' : tuesday_df,
-  'wednesday' : wednesday_df,
-  'thursday' : thursday_df,
-  'friday' : friday_df,
-  'saturday' : saturday_df,
-  }
+global dataframe_map
 
 day_map = {
     'monday' : 0,
@@ -19,7 +14,7 @@ day_map = {
     'wednesday' : 2,
     'thursday' : 3,
     'friday' : 4,
-    'saturday' : 5
+    'saturday' : 5,
 }
 
 teaching_type = {
@@ -150,6 +145,15 @@ if __name__ == '__main__':
     thursday_df = xlsx_df[thursday:friday].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
     friday_df = xlsx_df[friday:saturday].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
     saturday_df = xlsx_df[saturday:course_desc].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
+
+    dataframe_map = {
+      'monday' : monday_df,
+      'tuesday' : tuesday_df,
+      'wednesday' : wednesday_df,
+      'thursday' : thursday_df,
+      'friday' : friday_df,
+      'saturday' : saturday_df,
+    }
 
     with open('courses/courses.json') as fp:
         course_map = json.load(fp)
