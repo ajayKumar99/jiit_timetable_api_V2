@@ -124,11 +124,11 @@ def timetable_api_v1(day , batch_full , enrolled_courses):
   batch_abb = batch_full[0]
   batch_no = int(batch_full[1:])
   timing = []
-  flag = True
   for label , item in dataframe_map[day].iteritems():
     item_list = item.tolist()
     for data in item_list:
       data_list = {}
+      flag = False
       if str(data) != 'nan':
         data = data.replace('((' , '(').replace('+' , ',').split('(')
         batches = data[0]
@@ -138,11 +138,7 @@ def timetable_api_v1(day , batch_full , enrolled_courses):
         residue = residue[1].split('/')
         faculty = residue[1]
         room = residue[0][1:]
-        for enrolled in enrolled_courses:
-          flag = course[-5:] in enrolled
-          if flag:
-            course = enrolled
-            break
+        flag = course in enrolled_courses
         if((batch_no in buffered_data[batch_abb]) and flag):
           data_list['course'] = [key for key , value in course_map.items() if value == course][0]
           data_list['faculty'] = faculty
