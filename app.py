@@ -6,7 +6,37 @@ import pandas as pd
 app = Flask(__name__)
 api = Api(app)
 
-global dataframe_map
+
+########
+
+xlsx_df = pd.read_excel('timetable/B.TECH V sem.xlsx' , header=1)
+course_desc = xlsx_df[xlsx_df['9 -9.50 AM'] == 'NOTE: COURSE CODES MENTIONED IN THE TIMETABLE ABOVE SHOULD BE READ AS FOLLOWING'].index[0]
+monday = xlsx_df[xlsx_df['Unnamed: 0'] == 'MON'].index[0]
+tuesday = xlsx_df[xlsx_df['Unnamed: 0'] == 'TUES'].index[0]
+wednesday = xlsx_df[xlsx_df['Unnamed: 0'] == 'WED'].index[0]
+thursday = xlsx_df[xlsx_df['Unnamed: 0'] == 'THUR'].index[0]
+friday = xlsx_df[xlsx_df['Unnamed: 0'] == 'FRI'].index[0]
+saturday = xlsx_df[xlsx_df['Unnamed: 0'] == 'SAT'].index[0]
+monday_df = xlsx_df[:tuesday].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
+tuesday_df = xlsx_df[tuesday:wednesday].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
+wednesday_df = xlsx_df[wednesday:thursday].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
+thursday_df = xlsx_df[thursday:friday].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
+friday_df = xlsx_df[friday:saturday].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
+saturday_df = xlsx_df[saturday:course_desc].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
+
+dataframe_map = {
+  'monday' : monday_df,
+  'tuesday' : tuesday_df,
+  'wednesday' : wednesday_df,
+  'thursday' : thursday_df,
+  'friday' : friday_df,
+  'saturday' : saturday_df,
+}
+
+with open('courses/courses.json') as fp:
+    course_map = json.load(fp)
+
+########
 
 day_map = {
     'monday' : 0,
@@ -132,31 +162,4 @@ class TimetableApi(Resource):
 api.add_resource(TimetableApi , '/')
 
 if __name__ == '__main__':
-    xlsx_df = pd.read_excel('timetable/B.TECH V sem.xlsx' , header=1)
-    course_desc = xlsx_df[xlsx_df['9 -9.50 AM'] == 'NOTE: COURSE CODES MENTIONED IN THE TIMETABLE ABOVE SHOULD BE READ AS FOLLOWING'].index[0]
-    monday = xlsx_df[xlsx_df['Unnamed: 0'] == 'MON'].index[0]
-    tuesday = xlsx_df[xlsx_df['Unnamed: 0'] == 'TUES'].index[0]
-    wednesday = xlsx_df[xlsx_df['Unnamed: 0'] == 'WED'].index[0]
-    thursday = xlsx_df[xlsx_df['Unnamed: 0'] == 'THUR'].index[0]
-    friday = xlsx_df[xlsx_df['Unnamed: 0'] == 'FRI'].index[0]
-    saturday = xlsx_df[xlsx_df['Unnamed: 0'] == 'SAT'].index[0]
-    monday_df = xlsx_df[:tuesday].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
-    tuesday_df = xlsx_df[tuesday:wednesday].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
-    wednesday_df = xlsx_df[wednesday:thursday].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
-    thursday_df = xlsx_df[thursday:friday].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
-    friday_df = xlsx_df[friday:saturday].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
-    saturday_df = xlsx_df[saturday:course_desc].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
-
-    dataframe_map = {
-      'monday' : monday_df,
-      'tuesday' : tuesday_df,
-      'wednesday' : wednesday_df,
-      'thursday' : thursday_df,
-      'friday' : friday_df,
-      'saturday' : saturday_df,
-    }
-
-    with open('courses/courses.json') as fp:
-        course_map = json.load(fp)
-
     app.run(debug=True)
