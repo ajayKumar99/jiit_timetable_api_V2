@@ -125,8 +125,9 @@ def timetable_api_v1(day , batch_full , enrolled_courses):
 
 class TimetableApi(Resource):
     def post(self):
-        req = request.get_json()
-        return {'result' : [req , req]} , 201
+        data = request.get_json()
+        tables = timetable_api_v1(data['day'] , data['batch'] , data['enrolled_courses'])
+        return {'result' : tables} , 201
 
 api.add_resource(TimetableApi , '/')
 
