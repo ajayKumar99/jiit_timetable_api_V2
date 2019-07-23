@@ -12,4 +12,4 @@ class TimetableApi(Resource):
 api.add_resource(TimetableApi , '/')
 
 if __name__ == '__main__':
-  app.run(host='192.168.1.201' , port= '88')
+    app.run(debug=True)
