@@ -38,6 +38,8 @@ with open('courses/courses.json') as fp:
 
 ########
 
+all_days_res = {}
+
 day_map = {
     'monday' : 0,
     'tuesday' : 1,
@@ -152,8 +154,10 @@ def timetable_api_v1(day , batch_full , enrolled_courses):
 class TimetableApi(Resource):
     def post(self):
         data = request.get_json()
-        tables = timetable_api_v1(data['day'] , data['batch'] , data['enrolled_courses'])
-        return {'result' : tables} , 201
+        for day in day_map:
+          print(day)
+          all_days_res[day] = timetable_api_v1(day , data['batch'] , data['enrolled_courses'])
+        return {'result' : all_days_res} , 201
 
 api.add_resource(TimetableApi , '/')
 
