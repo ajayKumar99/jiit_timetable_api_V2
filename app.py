@@ -9,20 +9,20 @@ api = Api(app)
 
 ########
 
-xlsx_df = pd.read_excel('timetable/B.TECH V sem.xlsx' , header=1)
-course_desc = xlsx_df[xlsx_df['9 -9.50 AM'] == 'NOTE: COURSE CODES MENTIONED IN THE TIMETABLE ABOVE SHOULD BE READ AS FOLLOWING'].index[0]
+xlsx_df = pd.read_excel('timetable/B tech VI Sem (2).xlsx' , header=1)
+course_desc = xlsx_df[xlsx_df['Unnamed: 0'] == 'NOTE: COURSE CODES MENTIONED IN THE TIMETABLE ABOVE SHOULD BE READ AS FOLLOWING'].index[0]
 monday = xlsx_df[xlsx_df['Unnamed: 0'] == 'MON'].index[0]
 tuesday = xlsx_df[xlsx_df['Unnamed: 0'] == 'TUES'].index[0]
 wednesday = xlsx_df[xlsx_df['Unnamed: 0'] == 'WED'].index[0]
 thursday = xlsx_df[xlsx_df['Unnamed: 0'] == 'THUR'].index[0]
 friday = xlsx_df[xlsx_df['Unnamed: 0'] == 'FRI'].index[0]
 saturday = xlsx_df[xlsx_df['Unnamed: 0'] == 'SAT'].index[0]
-monday_df = xlsx_df[:tuesday].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
-tuesday_df = xlsx_df[tuesday:wednesday].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
-wednesday_df = xlsx_df[wednesday:thursday].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
-thursday_df = xlsx_df[thursday:friday].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
-friday_df = xlsx_df[friday:saturday].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
-saturday_df = xlsx_df[saturday:course_desc].drop(columns=['Unnamed: 0' , '12 NOON-12.50 PM'])
+monday_df = xlsx_df[:tuesday].drop(columns=['Unnamed: 0' , '12-12.50 PM'])
+tuesday_df = xlsx_df[tuesday:wednesday].drop(columns=['Unnamed: 0' , '12-12.50 PM'])
+wednesday_df = xlsx_df[wednesday:thursday].drop(columns=['Unnamed: 0' , '12-12.50 PM'])
+thursday_df = xlsx_df[thursday:friday].drop(columns=['Unnamed: 0' , '12-12.50 PM'])
+friday_df = xlsx_df[friday:saturday].drop(columns=['Unnamed: 0' , '12-12.50 PM'])
+saturday_df = xlsx_df[saturday:course_desc].drop(columns=['Unnamed: 0' , '12-12.50 PM'])
 
 dataframe_map = {
   'monday' : monday_df,
@@ -77,7 +77,11 @@ def extract_buffer(unstable_batch_list):
     'C' : []
   }
   curr_batch = ''
+  # print(unstable_batch_list)
   for it in unstable_batch_list:
+    it = it.strip()
+    if it == '':
+      continue
     start_index = 0
     end_index = 0
     if(it[0] == 'A' or it[0] == 'B' or it[0] == 'C'):
@@ -93,6 +97,8 @@ def extract_buffer(unstable_batch_list):
       else:
         bounded_batch = batch_nos.split('-')
         if len(bounded_batch) == 2:
+          if len(bounded_batch[1]) > 1 and (bounded_batch[1][0] == 'A' or bounded_batch[1][0] == 'B' or bounded_batch[1][0] == 'C'):
+            bounded_batch[1] = bounded_batch[1][1:]
           start_index = int(bounded_batch[0])
           end_index = int(bounded_batch[1])
         else:
@@ -132,6 +138,7 @@ def timetable_api_v1(day , batch_full , enrolled_courses):
       data_list = {}
       flag = False
       if str(data) != 'nan':
+        # print(data)
         data = data.replace('((' , '(').replace('+' , ',').split('(')
         batches = data[0]
         buffered_data , teach_method = parse_batch_details(batches)
