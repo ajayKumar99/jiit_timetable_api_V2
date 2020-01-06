@@ -161,8 +161,11 @@ def timetable_api_v1(day , batch_full , enrolled_courses):
 class TimetableApi(Resource):
     def post(self):
         data = request.get_json()
+        if 'CI611' in data['enrolled_courses']:
+            data['enrolled_courses'].append('CI671')
         for day in day_map:
           print(day)
+          print(data['enrolled_courses'])
           all_days_res[day] = timetable_api_v1(day , data['batch'] , data['enrolled_courses'])
         return {'result' : all_days_res} , 201
 
