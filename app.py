@@ -22,7 +22,7 @@ tuesday_df = xlsx_df[tuesday:wednesday].drop(columns=['Unnamed: 0' , '12-12.50 P
 wednesday_df = xlsx_df[wednesday:thursday].drop(columns=['Unnamed: 0' , '12-12.50 PM'])
 thursday_df = xlsx_df[thursday:friday].drop(columns=['Unnamed: 0' , '12-12.50 PM'])
 friday_df = xlsx_df[friday:saturday].drop(columns=['Unnamed: 0' , '12-12.50 PM'])
-saturday_df = xlsx_df[saturday:course_desc].drop(columns=['Unnamed: 0' , '12-12.50 PM'])
+saturday_df = xlsx_df[saturday:course_desc].drop(columns=['Unnamed: 0'])
 
 dataframe_map = {
   'monday' : monday_df,
@@ -169,7 +169,23 @@ class TimetableApi(Resource):
           all_days_res[day] = timetable_api_v1(day , data['batch'] , data['enrolled_courses'])
         return {'result' : all_days_res} , 201
 
+class TimetableApi2(Resource):
+    def post(self):
+        data = request.get_json()
+        # if 'CI611' in data['enrolled_courses']:
+        #     data['enrolled_courses'].append('CI671')
+        en_courses = []
+        for course in data['enrolled_courses']:
+          en_courses.append(course_map[course])
+        for day in day_map:
+          print(day)
+          print(en_courses)
+          all_days_res[day] = timetable_api_v1(day , data['batch'] , en_courses)
+        return {'result' : all_days_res} , 201
+
 api.add_resource(TimetableApi , '/')
+api.add_resource(TimetableApi2 , '/v2')
 
 if __name__ == '__main__':
     app.run(host='192.168.1.201',debug=False)
+    # app.run()
